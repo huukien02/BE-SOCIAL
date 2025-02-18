@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Reaction } from './reaction.entity';
 import { User } from 'src/users/user.entity';
 import { Blog } from 'src/blogs/blogs.entity';
+import { BlogsGateway } from 'src/blogs/blog.gateway';
 
 @Injectable()
 export class ReactionService {
@@ -11,15 +12,16 @@ export class ReactionService {
     @InjectRepository(Reaction) private reactionRepo: Repository<Reaction>,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Blog) private blogRepo: Repository<Blog>,
+    private blogsGateway: BlogsGateway,
   ) {}
 
   async reactToBlog(userId: number, blogId: number, type: number) {
-    const user = await this.userRepo.findOne({ where: { id: userId } });
-    const blog = await this.blogRepo.findOne({ where: { id: blogId } });
+    const [user, blog] = await Promise.all([
+      this.userRepo.findOne({ where: { id: userId } }),
+      this.blogRepo.findOne({ where: { id: blogId } }),
+    ]);
 
-    if (!user || !blog) {
-      throw new Error('User hoặc Blog không tồn tại');
-    }
+    if (!user || !blog) throw new Error('User hoặc Blog không tồn tại');
 
     let reaction = await this.reactionRepo.findOneBy({
       user: { id: userId },
@@ -28,10 +30,13 @@ export class ReactionService {
 
     if (reaction) {
       reaction.type = type;
-      return this.reactionRepo.save(reaction);
+    } else {
+      reaction = this.reactionRepo.create({ user, blog, type });
     }
 
-    reaction = this.reactionRepo.create({ user, blog, type });
-    return this.reactionRepo.save(reaction);
+    await this.reactionRepo.save(reaction);
+    this.blogsGateway.sendUpdatedReactions(blogId);
+
+    return reaction;
   }
 }

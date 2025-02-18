@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { CommentsModule } from './comments/comments.module';
 import { ReactionModule } from './reaction/reaction.module';
+import { BlogsGateway } from './blogs/blog.gateway';
 
 @Module({
   imports: [
@@ -43,6 +44,6 @@ import { ReactionModule } from './reaction/reaction.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, BlogsGateway],
 })
 export class AppModule {}
