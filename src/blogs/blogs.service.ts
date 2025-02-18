@@ -5,6 +5,7 @@ import { Blog } from './blogs.entity';
 import { saveFile } from 'src/common';
 import { User } from 'src/users/user.entity';
 import { CreateBlogDto } from './DTO/create-blog.dto';
+import { BlogsGateway } from './blog.gateway';
 
 @Injectable()
 export class BlogsService {
@@ -13,6 +14,7 @@ export class BlogsService {
     private blogRepo: Repository<Blog>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    private blogsGateway: BlogsGateway,
   ) {}
 
   async createPost(blog: CreateBlogDto, userLogger: User) {
@@ -29,7 +31,6 @@ export class BlogsService {
     }
 
     const newBlog = new Blog();
-
     newBlog.title = blog.title;
     newBlog.content = blog.content;
     newBlog.image = blog.image ? saveFile(blog.image, 'blogs') : null;
@@ -37,10 +38,13 @@ export class BlogsService {
     newBlog.user = user;
 
     await this.blogRepo.save(newBlog);
+    // Gửi sự kiện WebSocket khi có bài viết mới
+    const updatedBlogs = await this.findAll();
+    this.blogsGateway.sendUpdatedBlogs(updatedBlogs);
   }
 
   async findAll() {
-    const blogs = await this.blogRepo.find({
+    return this.blogRepo.find({
       relations: [
         'user',
         'comments',
@@ -49,6 +53,5 @@ export class BlogsService {
         'reactions.user',
       ],
     });
-    return blogs;
   }
 }

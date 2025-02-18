@@ -6,10 +6,11 @@ import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 import { Comment } from './comments.entity';
 import { Blog } from 'src/blogs/blogs.entity';
+import { BlogsGateway } from 'src/blogs/blog.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Comment, User, Blog])],
-  providers: [CommentsService],
+  providers: [CommentsService, BlogsGateway],
   controllers: [CommentsController],
 })
 export class CommentsModule {}

@@ -6,6 +6,7 @@ import { User } from 'src/users/user.entity';
 import { Blog } from 'src/blogs/blogs.entity';
 import { CreateCommentDto } from './DTO/create-comments.dto';
 import { Comment } from './comments.entity';
+import { BlogsGateway } from 'src/blogs/blog.gateway';
 
 @Injectable()
 export class CommentsService {
@@ -16,6 +17,7 @@ export class CommentsService {
     private readonly blogRepository: Repository<Blog>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private blogsGateway: BlogsGateway,
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto) {
@@ -44,5 +46,6 @@ export class CommentsService {
     newComment.blog = blog;
 
     await this.commentRepository.save(newComment);
+    this.blogsGateway.sendUpdatedComments(blogId, blog.comments);
   }
 }
