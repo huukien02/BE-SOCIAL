@@ -11,6 +11,8 @@ import { BlogsModule } from './blogs/blogs.module';
 import { CommentsModule } from './comments/comments.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { BlogsGateway } from './blogs/blog.gateway';
+import { ConversationModule } from './conversation/conversation.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { BlogsGateway } from './blogs/blog.gateway';
     CommentsModule,
     UserModule,
     AuthModule,
+    ConversationModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService, BlogsGateway],

@@ -13,6 +13,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
@@ -64,5 +65,18 @@ export class UserController {
   @Get()
   async findAll(): Promise<User[]> {
     return await this.userService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('friends')
+  async getFriend(@Request() req): Promise<ApiResponse> {
+    const user = req.user;
+
+    const data = await this.userService.getFriends(user.id);
+    return {
+      message: 'Thành công',
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 }

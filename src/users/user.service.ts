@@ -2,7 +2,7 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './DTO/create-user.dto';
 import { ROLE, saveFile } from 'src/common';
@@ -57,6 +57,14 @@ export class UserService {
     await this.userRepository.update(id, updateUserDto);
 
     return this.userRepository.findOne({ where: [{ id }] });
+  }
+
+  async getFriends(userId: number): Promise<User[]> {
+    return this.userRepository.find({
+      where: {
+        id: Not(userId),
+      },
+    });
   }
 
   async findAll(): Promise<User[]> {

@@ -9,6 +9,7 @@ export const ROLE = {
 export const AUTH_SECCET_KEY = 'AUTH_SECCET_KEY';
 export const TIME_EXPIRE = '1h';
 export const dateTimeExpire = () => {
+  // TIME_EXPIRE 1h = 3600s
   return new Date(Date.now() + 3600 * 1000);
 };
 

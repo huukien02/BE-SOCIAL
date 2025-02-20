@@ -19,7 +19,7 @@ export class BlogsGateway
   server: Server;
 
   afterInit(server: Server) {
-    console.log('WebSocket Init');
+    console.log('WebSocket Blogs Init');
   }
 
   handleConnection(client: Socket) {
