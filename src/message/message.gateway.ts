@@ -55,4 +55,40 @@ export class MessageGateway
       );
     }
   }
+
+  @SubscribeMessage('callUser')
+  handleCallUser(
+    client: Socket,
+    payload: { to: number; signal: any; from: number },
+  ) {
+    const receiverSocketId = this.onlineUsers.get(payload.to);
+    if (receiverSocketId) {
+      this.server.to(receiverSocketId).emit('incomingCall', {
+        signal: payload.signal,
+        from: payload.from,
+      });
+    }
+  }
+
+  @SubscribeMessage('answerCall')
+  handleAnswerCall(client: Socket, payload: { to: number; signal: any }) {
+    const callerSocketId = this.onlineUsers.get(payload.to);
+    if (callerSocketId) {
+      this.server.to(callerSocketId).emit('callAccepted', payload.signal);
+    }
+  }
+
+  @SubscribeMessage('endCall')
+  handleEndCall(client: Socket, payload: { from: number; to: number }) {
+    const receiverSocketId = this.onlineUsers.get(payload.to);
+    const callerSocketId = this.onlineUsers.get(payload.from);
+
+    if (receiverSocketId) {
+      this.server.to(receiverSocketId).emit('callEnded');
+    }
+
+    if (callerSocketId) {
+      this.server.to(callerSocketId).emit('callEnded');
+    }
+  }
 }
