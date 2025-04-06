@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserToken } from 'src/access-token/user-token.entity';
-import { AUTH_SECCET_KEY } from 'src/common';
+import { AUTH_SECRET_KEY } from 'src/common';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = this.jwtService.verify(token, {
-        secret: AUTH_SECCET_KEY,
+        secret: AUTH_SECRET_KEY,
       });
 
       request.user = payload;

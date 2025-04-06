@@ -5,7 +5,7 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { AUTH_SECCET_KEY, TIME_EXPIRE } from 'src/common';
+import { AUTH_SECRET_KEY, TIME_EXPIRE } from 'src/common';
 import { JwtAuthGuard } from './auth.guard';
 import { UserToken } from 'src/access-token/user-token.entity';
 
@@ -14,7 +14,7 @@ import { UserToken } from 'src/access-token/user-token.entity';
     PassportModule,
     TypeOrmModule.forFeature([User, UserToken]),
     JwtModule.register({
-      secret: AUTH_SECCET_KEY,
+      secret: AUTH_SECRET_KEY,
       signOptions: { expiresIn: TIME_EXPIRE },
     }),
   ],

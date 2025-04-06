@@ -54,4 +54,54 @@ export class BlogsService {
       ],
     });
   }
+
+  async getMonthlyStatistics() {
+    const blogData = await this.blogRepo
+      .createQueryBuilder('blog')
+      .select([
+        "DATE_FORMAT(blog.created_at, '%m') AS month",
+        'COUNT(blog.id) AS blogs',
+      ])
+      .groupBy("DATE_FORMAT(blog.created_at, '%m')")
+      .getRawMany();
+
+    const userData = await this.userRepo
+      .createQueryBuilder('user')
+      .select([
+        "DATE_FORMAT(user.created_at, '%m') AS month",
+        'COUNT(user.id) AS users',
+      ])
+      .groupBy("DATE_FORMAT(user.created_at, '%m')")
+      .getRawMany();
+
+    // Gộp dữ liệu từ hai bảng
+    const monthNames = [
+      'Tháng 1',
+      'Tháng 2',
+      'Tháng 3',
+      'Tháng 4',
+      'Tháng 5',
+      'Tháng 6',
+      'Tháng 7',
+      'Tháng 8',
+      'Tháng 9',
+      'Tháng 10',
+      'Tháng 11',
+      'Tháng 12',
+    ];
+
+    const data = monthNames.map((month, index) => {
+      const monthIndex = (index + 1).toString().padStart(2, '0'); // Định dạng '01', '02', ..., '12'
+      const blogs = blogData.find((b) => b.month === monthIndex)?.blogs || 0;
+      const users = userData.find((u) => u.month === monthIndex)?.users || 0;
+
+      return {
+        month,
+        users: Number(users),
+        blogs: Number(blogs),
+      };
+    });
+
+    return data;
+  }
 }
