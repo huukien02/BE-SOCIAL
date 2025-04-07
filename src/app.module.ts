@@ -19,13 +19,15 @@ import { MessageModule } from './message/message.module';
     // ConfigurationModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'mysql',
       port: 3306,
       username: 'root',
-      password: '',
+      password: 'password',
       database: 'database-v1',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
+      // host: 'localhost',
+      // password: '',
     }),
     ServeStaticModule.forRoot(
       {

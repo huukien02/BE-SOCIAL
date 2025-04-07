@@ -23,12 +23,19 @@ export class ConversationService {
     }
 
     // // Kiểm tra nếu cuộc trò chuyện giữa 2 user đã tồn tại
+    // const existingConversation = await this.conversationRepository
+    //   .createQueryBuilder('conversation')
+    //   .leftJoinAndSelect('conversation.participants', 'participant')
+    //   .where('participant.id IN (:...ids)', { ids: [userId1, userId2] })
+    //   .groupBy('conversation.id')
+    //   .having('COUNT(participant.id) = 2')
+    //   .getOne();
+
     const existingConversation = await this.conversationRepository
-      .createQueryBuilder('conversation')
-      .leftJoinAndSelect('conversation.participants', 'participant')
-      .where('participant.id IN (:...ids)', { ids: [userId1, userId2] })
-      .groupBy('conversation.id')
-      .having('COUNT(participant.id) = 2')
+      .createQueryBuilder('c')
+      .select('c.id')
+      .innerJoin('c.participants', 'p1', 'p1.id = :userId1', { userId1 })
+      .innerJoin('c.participants', 'p2', 'p2.id = :userId2', { userId2 })
       .getOne();
 
     if (existingConversation) {
